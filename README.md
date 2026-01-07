@@ -1,3 +1,6 @@
+
+boss coder https://firebasestorage.googleapis.com/v0/b/bosscoderplatformindia.appspot.com/o/Brochure%2FCurriculum%2FEvolve%20Curriculum%20Brochure.pdf?alt=media&token=62ac6b7e-1512-45f0-b4ad-366444aeeb36
+
 # Java Design Patterns
 
 A comprehensive guide to all 23 Gang of Four (GoF) design patterns with Java implementations and explanations.
