@@ -19,5 +19,11 @@ public class MediatorDemo {
         user1.send("Hello everyone!");
         System.out.println();
         user3.send("Hi Alice!");
+        System.out.println();
+        user2.send("Welcome to the chat!");
+        System.out.println();
+        user4.send("Good morning everyone!");
+        System.out.println();
+        user1.send("Thanks everyone, glad to be here!");
     }
 }
