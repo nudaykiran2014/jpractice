@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+# AWS S3 Configuration
+aws:
+  s3:
+    bucket-name: ${AWS_S3_BUCKET:your-bucket-name}
+    region: ${AWS_REGION:us-east-1}
+  credentials:
+    access-key: ${AWS_ACCESS_KEY_ID:}
+    secret-key: ${AWS_SECRET_ACCESS_KEY:}
+
+# File upload settings
+file:
+  upload:
+    allowed-extensions: jpg,jpeg,png,gif,pdf,doc,docx,txt,csv,xlsx
+    max-size-mb: 50
