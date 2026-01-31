@@ -28,72 +28,80 @@
  *     }
  *     
  *     class Chef implements RestaurantEmployee {
- *         void cook() { /* Chef cooks! */ }
- *         void takeOrder() { /* Empty - Chef doesn't do this! */ }  ❌
- *         void cleanTables() { /* Empty */ }  ❌
- *         void handlePayment() { /* Empty */ }  ❌
- *         void deliverFood() { /* Empty */ }  ❌
- *     }
- *     
- *     Problem: Chef is FORCED to implement methods it doesn't use!
- * 
- * 
- * GOOD Design (Following ISP):
- * ────────────────────────────
- *     interface Cookable {
+ *         void cook() { /* Chef cooks! */ }*void takeOrder(){ /* Empty - Chef doesn't do this! */ }❌*void cleanTables(){ /* Empty */ }❌*void handlePayment(){ /* Empty */ }❌*void deliverFood(){ /* Empty */ }❌*}**Problem:Chef is FORCED to implement methods it doesn'tuse!***GOOD Design(Following ISP):*────────────────────────────*
+
+interface Cookable {
  *         void cook();
- *     }
- *     
- *     interface OrderTaker {
+ *     }**
+
+interface OrderTaker {
  *         void takeOrder();
- *     }
- *     
- *     interface Cleaner {
+ *     }**
+
+interface Cleaner {
  *         void cleanTables();
- *     }
- *     
- *     class Chef implements Cookable {
+ *     }**
+
+class Chef implements Cookable {
  *         void cook() { /* Chef only cooks! */ }  ✅
- *     }
- *     
- *     class Waiter implements OrderTaker, Cleaner {
- *         void takeOrder() { /* Takes orders! */ }  ✅
- *         void cleanTables() { /* Cleans! */ }  ✅
- *     }
- *     
- *     Now: Each class implements ONLY what it needs!
- * 
- * 
+ *     }**
+
+class Waiter implements OrderTaker, Cleaner {
+    *
+    void takeOrder() {
+        /* Takes orders! */ }✅*
+
+    void cleanTables() { /* Cleans! */ }✅*}**Now:Each class implements
+
+    ONLY what
+    it needs!***═══════════════════════════════════════════════════════════════════════════════════════════════*
+
+   THE PROBLEM (Without ISP)
  * ═══════════════════════════════════════════════════════════════════════════════════════════════
- * THE PROBLEM (Without ISP)
- * ═══════════════════════════════════════════════════════════════════════════════════════════════
  * 
- *     interface Machine {
+ *
+
+    interface Machine {
  *         void print();
  *         void scan();
  *         void fax();
  *         void staple();
- *     }
- *     
- *     class AllInOnePrinter implements Machine {
- *         void print() { ... }  ✅
- *         void scan() { ... }   ✅
- *         void fax() { ... }    ✅
- *         void staple() { ... } ✅
- *     }
- *     
- *     class SimplePrinter implements Machine {
- *         void print() { ... }  ✅
- *         void scan() { throw new UnsupportedOperationException(); }  ❌
- *         void fax() { throw new UnsupportedOperationException(); }   ❌
- *         void staple() { throw new UnsupportedOperationException(); } ❌
- *     }
- *     
- *     Problem: SimplePrinter is FORCED to have methods it can't use!
- * 
- */
+ *     }**
 
-package solid;
+    class AllInOnePrinter implements Machine {
+        *
+        void print() { ... }✅*
+
+        void scan() { ... }✅*
+
+        void fax() { ... }✅*
+
+        void staple() { ... }✅*
+    }**
+
+    class SimplePrinter implements Machine {
+        *
+        void print() { ... }✅*
+
+        void scan() {
+            throw new UnsupportedOperationException();
+        }❌*
+
+        void fax() {
+            throw new UnsupportedOperationException();
+        }❌*
+
+        void staple() { throw new UnsupportedOperationException(); }❌*
+}**Problem:
+
+SimplePrinter is
+FORCED to
+have methods it can'tuse!**/
+
+package solid
+;
+
+import java.util.List;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // BAD EXAMPLE - Violating ISP ❌
@@ -102,10 +110,15 @@ package solid;
 // FAT interface - too many methods!
 interface BadWorker {
     void work();
+
     void eat();
+
     void sleep();
+
     void code();
+
     void attendMeetings();
+
     void managePeople();
 }
 
@@ -114,27 +127,27 @@ class BadDeveloper implements BadWorker {
     public void work() {
         System.out.println("Developer working...");
     }
-    
+
     @Override
     public void eat() {
         System.out.println("Developer eating...");
     }
-    
+
     @Override
     public void sleep() {
         System.out.println("Developer sleeping...");
     }
-    
+
     @Override
     public void code() {
         System.out.println("Developer coding...");
     }
-    
+
     @Override
     public void attendMeetings() {
         System.out.println("Developer in meeting...");
     }
-    
+
     @Override
     public void managePeople() {
         // Developer doesn't manage! But FORCED to implement! ❌
@@ -147,33 +160,32 @@ class BadRobot implements BadWorker {
     public void work() {
         System.out.println("Robot working 24/7...");
     }
-    
+
     @Override
     public void eat() {
         throw new UnsupportedOperationException("Robot doesn't eat!"); // ❌
     }
-    
+
     @Override
     public void sleep() {
         throw new UnsupportedOperationException("Robot doesn't sleep!"); // ❌
     }
-    
+
     @Override
     public void code() {
         throw new UnsupportedOperationException("Robot doesn't code!"); // ❌
     }
-    
+
     @Override
     public void attendMeetings() {
         throw new UnsupportedOperationException("Robot doesn't attend meetings!"); // ❌
     }
-    
+
     @Override
     public void managePeople() {
         throw new UnsupportedOperationException("Robot doesn't manage!"); // ❌
     }
 }
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // GOOD EXAMPLE - Following ISP ✅
@@ -206,17 +218,17 @@ class Developer implements Workable, Eatable, Sleepable, Codeable {
     public void work() {
         System.out.println("👨‍💻 Developer working...");
     }
-    
+
     @Override
     public void eat() {
         System.out.println("🍕 Developer eating pizza...");
     }
-    
+
     @Override
     public void sleep() {
         System.out.println("😴 Developer sleeping (rarely)...");
     }
-    
+
     @Override
     public void code() {
         System.out.println("⌨️ Developer coding awesome stuff!");
@@ -229,17 +241,17 @@ class Manager implements Workable, Eatable, Sleepable, Manageable {
     public void work() {
         System.out.println("👔 Manager working...");
     }
-    
+
     @Override
     public void eat() {
         System.out.println("🍽️ Manager having lunch meeting...");
     }
-    
+
     @Override
     public void sleep() {
         System.out.println("😴 Manager sleeping...");
     }
-    
+
     @Override
     public void managePeople() {
         System.out.println("👥 Manager managing team...");
@@ -255,7 +267,6 @@ class Robot implements Workable {
     // No eat(), sleep(), code() - because Robot doesn't need them! ✅
 }
 
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // REAL-WORLD EXAMPLE: Printer/Scanner
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -263,7 +274,9 @@ class Robot implements Workable {
 // BAD: Fat interface ❌
 interface BadMachine {
     void print(String document);
+
     void scan(String document);
+
     void fax(String document);
 }
 
@@ -294,18 +307,17 @@ class AllInOnePrinter implements Printer, Scanner, Fax {
     public void print(String document) {
         System.out.println("🖨️ Printing: " + document);
     }
-    
+
     @Override
     public void scan(String document) {
         System.out.println("📄 Scanning: " + document);
     }
-    
+
     @Override
     public void fax(String document) {
         System.out.println("📠 Faxing: " + document);
     }
 }
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // REAL-WORLD EXAMPLE: Vehicle Features
@@ -354,7 +366,7 @@ class AmphibiousVehicle implements Drivable, Sailable {
     public void drive() {
         System.out.println("🚙 Amphibious vehicle driving...");
     }
-    
+
     @Override
     public void sail() {
         System.out.println("🚙 Amphibious vehicle sailing...");
@@ -367,13 +379,12 @@ class FlyingCar implements Drivable, Flyable {
     public void drive() {
         System.out.println("🚗 Flying car driving...");
     }
-    
+
     @Override
     public void fly() {
         System.out.println("🚗 Flying car taking off!");
     }
 }
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // REAL-WORLD EXAMPLE: Repository Pattern
@@ -382,24 +393,34 @@ class FlyingCar implements Drivable, Flyable {
 // BAD: Fat repository ❌
 interface BadRepository<T> {
     T findById(Long id);
+
     List<T> findAll();
+
     void save(T entity);
+
     void update(T entity);
+
     void delete(Long id);
+
     void bulkInsert(List<T> entities);
+
     void generateReport();
+
     void sendNotification();
 }
 
 // GOOD: Segregated repository ✅
 interface ReadRepository<T> {
     T findById(Long id);
+
     java.util.List<T> findAll();
 }
 
 interface WriteRepository<T> {
     void save(T entity);
+
     void update(T entity);
+
     void delete(Long id);
 }
 
@@ -410,7 +431,7 @@ interface BulkRepository<T> {
 // Read-only service needs only ReadRepository
 class ReportService {
     private ReadRepository<String> repository;
-    
+
     public void generateReport() {
         // Only uses read operations!
     }
@@ -420,10 +441,9 @@ class ReportService {
 class UserService {
     private ReadRepository<String> readRepo;
     private WriteRepository<String> writeRepo;
-    
+
     // Can read and write!
 }
-
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // DEMO
@@ -519,57 +539,63 @@ public class I_InterfaceSegregation {
 }
 
 /*
- * ═══════════════════════════════════════════════════════════════════════════════════════════════
+ * ═════════════════════════════════════════════════════════════════════════════
+ * ══════════════════
  * ISP IN SPRING BOOT
- * ═══════════════════════════════════════════════════════════════════════════════════════════════
+ * ═════════════════════════════════════════════════════════════════════════════
+ * ══════════════════
  * 
- *     Spring Data JPA follows ISP:
- *     
- *     interface CrudRepository<T, ID> {
- *         T save(T entity);
- *         Optional<T> findById(ID id);
- *         void delete(T entity);
- *         // Basic CRUD only!
- *     }
- *     
- *     interface PagingAndSortingRepository<T, ID> extends CrudRepository<T, ID> {
- *         Page<T> findAll(Pageable pageable);
- *         // Adds paging capabilities!
- *     }
- *     
- *     interface JpaRepository<T, ID> extends PagingAndSortingRepository<T, ID> {
- *         void flush();
- *         // Adds JPA-specific features!
- *     }
- *     
- *     You pick the interface level you need!
+ * Spring Data JPA follows ISP:
+ * 
+ * interface CrudRepository<T, ID> {
+ * T save(T entity);
+ * Optional<T> findById(ID id);
+ * void delete(T entity);
+ * // Basic CRUD only!
+ * }
+ * 
+ * interface PagingAndSortingRepository<T, ID> extends CrudRepository<T, ID> {
+ * Page<T> findAll(Pageable pageable);
+ * // Adds paging capabilities!
+ * }
+ * 
+ * interface JpaRepository<T, ID> extends PagingAndSortingRepository<T, ID> {
+ * void flush();
+ * // Adds JPA-specific features!
+ * }
+ * 
+ * You pick the interface level you need!
  * 
  * 
- * ═══════════════════════════════════════════════════════════════════════════════════════════════
+ * ═════════════════════════════════════════════════════════════════════════════
+ * ══════════════════
  * WHEN TO SPLIT INTERFACES?
- * ═══════════════════════════════════════════════════════════════════════════════════════════════
+ * ═════════════════════════════════════════════════════════════════════════════
+ * ══════════════════
  * 
- *     Ask yourself:
- *     ─────────────
- *     1. "Do all implementers need ALL these methods?"
- *     2. "Are some methods always implemented together?"
- *     3. "Would splitting make implementations simpler?"
- *     
- *     If some methods are often empty/throwing → SPLIT!
+ * Ask yourself:
+ * ─────────────
+ * 1. "Do all implementers need ALL these methods?"
+ * 2. "Are some methods always implemented together?"
+ * 3. "Would splitting make implementations simpler?"
+ * 
+ * If some methods are often empty/throwing → SPLIT!
  * 
  * 
- * ═══════════════════════════════════════════════════════════════════════════════════════════════
+ * ═════════════════════════════════════════════════════════════════════════════
+ * ══════════════════
  * RELATIONSHIP WITH OTHER PRINCIPLES
- * ═══════════════════════════════════════════════════════════════════════════════════════════════
+ * ═════════════════════════════════════════════════════════════════════════════
+ * ══════════════════
  * 
- *     ISP + SRP:
- *     ──────────
- *     SRP = One class, one responsibility
- *     ISP = One interface, one purpose
- *     Both promote focused, single-purpose design!
- *     
- *     ISP + LSP:
- *     ──────────
- *     If you follow ISP, LSP becomes easier!
- *     Small interfaces = Easier to implement correctly
+ * ISP + SRP:
+ * ──────────
+ * SRP = One class, one responsibility
+ * ISP = One interface, one purpose
+ * Both promote focused, single-purpose design!
+ * 
+ * ISP + LSP:
+ * ──────────
+ * If you follow ISP, LSP becomes easier!
+ * Small interfaces = Easier to implement correctly
  */

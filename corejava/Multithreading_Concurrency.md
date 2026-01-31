@@ -2509,6 +2509,107 @@ public void goodMethod() {
 >
 > Use instance synchronized for instance data, static synchronized for static (class-level) data.
 
+---
+
+# 20. ForkJoinPool
+
+## Kid-Friendly Explanation 🧒
+
+**The Big Puzzle Project 🧩**
+
+Imagine you have a **GIANT** 10,000 piece puzzle to solve.
+
+- **Single Thread:** One person trying to do it alone. (Takes forever!) 😴
+- **ThreadPool:** You call 4 friends, and give each 2,500 pieces. But what if one friend finishes fast and the others are slow? The fast friend sits idle. 🤷
+- **ForkJoinPool:** You call 4 friends. If one finishes their pile, they **STEAL** work from the others who are still busy! Everyone keeps working until the WHOLE job is done. 🤝⚡
+
+## Key Concept: Divide and Conquer
+
+1.  **Split** big task into smaller tasks (**Fork**)
+2.  **Do** the small tasks
+3.  **Combine** results (**Join**)
+
+This is perfect for recursive problems!
+
+## The Magic: Work Stealing 🕵️
+
+- Threads don't just sit idle.
+- If Thread A finishes its queue, it looks at Thread B's queue.
+- It steals tasks from the **end** (deque) of Thread B's queue to help out.
+- **Result:** Maximum CPU utilization!
+
+## Code Example
+
+```java
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveTask;
+
+// Simple task: Sum array of numbers
+class SumTask extends RecursiveTask<Long> {
+    private static final int THRESHOLD = 1000; // Split if more than 1000 items
+    private long[] array;
+    private int start, end;
+
+    public SumTask(long[] array, int start, int end) {
+        this.array = array;
+        this.start = start;
+        this.end = end;
+    }
+
+    @Override
+    protected Long compute() {
+        // If task is small enough, just do it directly
+        if (end - start <= THRESHOLD) {
+            long sum = 0;
+            for (int i = start; i < end; i++) {
+                sum += array[i];
+            }
+            return sum;
+        } else {
+            // Task is too big! Split it!
+            int mid = start + (end - start) / 2;
+            
+            SumTask leftTask = new SumTask(array, start, mid);
+            SumTask rightTask = new SumTask(array, mid, end);
+            
+            // Fork: Run subtasks asynchronously
+            leftTask.fork();                        // Push to queue
+            long rightResult = rightTask.compute(); // Do right half immediately
+            long leftResult = leftTask.join();      // Wait for left (help others while waiting!)
+            
+            return leftResult + rightResult;
+        }
+    }
+}
+
+public class ForkJoinDemo {
+    public static void main(String[] args) {
+        // commonPool uses threads = number of CPU cores - 1
+        ForkJoinPool pool = ForkJoinPool.commonPool(); 
+        
+        long[] array = new long[10_000];
+        for(int i=0; i<array.length; i++) array[i] = 1;
+        
+        SumTask mainTask = new SumTask(array, 0, array.length);
+        long result = pool.invoke(mainTask);
+        
+        System.out.println("Result: " + result);
+    }
+}
+```
+
+## Difference from ExecutorService
+
+| Feature | ExecutorService | ForkJoinPool |
+|---------|-----------------|--------------|
+| **Task Relationship** | Independent tasks | Recursive sub-tasks |
+| **Worker Threads** | One queue per pool (usually) | One queue per Thread (Deque) |
+| **Idle Threads** | Wait for work | **Steal** work from busy threads |
+| **Best For** | Web server requests | Heavy computation (Matrix math, Sorting) |
+| **Used By** | Manually created | `Stream.parallel()`, `CompletableFuture` |
+
+
+
 
 
 
